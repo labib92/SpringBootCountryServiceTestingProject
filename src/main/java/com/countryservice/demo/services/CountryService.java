@@ -2,52 +2,40 @@ package com.countryservice.demo.services;
 
 import com.countryservice.demo.beans.Country;
 import com.countryservice.demo.controllers.AddResponse;
+import com.countryservice.demo.repositories.CountryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Component
+@Service
 public class CountryService {
-    static Map<Integer, Country> countryIdMap;
 
-    public CountryService(){
-        countryIdMap = new HashMap<Integer, Country>();
+    @Autowired
+    CountryRepository countryRepository;
 
-        Country russiaCountry = new Country(1,"Russia", "Moscow");
-        Country usaCountry = new Country(2,"USA","Washington");
-        Country ukCountry =  new Country(3, "UK", "London");
 
-        countryIdMap.put(1, russiaCountry);
-        countryIdMap.put(2, usaCountry);
-        countryIdMap.put(3, ukCountry);
+    private int getMaxId(){
+        return countryRepository.findAll().size() + 1;
     }
 
-    private static int getMaxId(){
-        int max = 0;
-        for(int i : countryIdMap.keySet()){
-            if(max <= i){
-                max = i;
-            }
-        }
-        return max + 1;
-    }
 
     public List<Country> getAllCountries(){
-        return new ArrayList<Country>(countryIdMap.values());
+       return countryRepository.findAll();
     }
 
     public Country getCountryByID(int id){
-        return countryIdMap.get(id);
+       return countryRepository.findById(id).get();
     }
 
     public Country getCountryByName(String countryName){
+        List<Country> countries = countryRepository.findAll();
         Country country = null;
-        for(int i : countryIdMap.keySet()){
-            if(countryIdMap.get(i).getCountryName().equals(countryName)){
-                country = countryIdMap.get(i);
+        for (Country i : countries) {
+            if (i.getCountryName().equalsIgnoreCase(countryName)) {
+                country = i;
             }
         }
         return country;
@@ -55,19 +43,17 @@ public class CountryService {
 
     public Country addNewCountry(Country country){
         country.setId(getMaxId());
-        countryIdMap.put(country.getId(), country);
+        countryRepository.save(country);
         return country;
     }
 
     public Country updateCountry(Country country){
-        if(country.getId() > 0){
-            countryIdMap.put(country.getId(), country);
-        }
+        countryRepository.save(country);
         return country;
     }
 
     public AddResponse deleteCountry(int id){
-        countryIdMap.remove(id);
+        countryRepository.deleteById(id);
         AddResponse response = new AddResponse();
         response.setMessage("Country deleted...");
         response.setId(id);
