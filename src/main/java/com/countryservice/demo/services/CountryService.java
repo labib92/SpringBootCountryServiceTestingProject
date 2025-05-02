@@ -16,11 +16,9 @@ public class CountryService {
     @Autowired
     CountryRepository countryRepository;
 
-
     private int getMaxId(){
         return countryRepository.findAll().size() + 1;
     }
-
 
     public List<Country> getAllCountries(){
        return countryRepository.findAll();
