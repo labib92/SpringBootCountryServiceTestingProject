@@ -25,7 +25,15 @@ public class CountryService {
     }
 
     public Country getCountryByID(int id){
-       return countryRepository.findById(id).get();
+        List<Country> countries = countryRepository.findAll();
+        Country country = null;
+        for(Country i : countries){
+            if(i.getId() == id){
+                country = i;
+                break;
+            }
+        }
+        return country;
     }
 
     public Country getCountryByName(String countryName){
@@ -34,6 +42,7 @@ public class CountryService {
         for (Country i : countries) {
             if (i.getCountryName().equalsIgnoreCase(countryName)) {
                 country = i;
+                break;
             }
         }
         return country;
@@ -46,8 +55,7 @@ public class CountryService {
     }
 
     public Country updateCountry(Country country){
-        countryRepository.save(country);
-        return country;
+        return countryRepository.save(country);
     }
 
     public AddResponse deleteCountry(int id){
