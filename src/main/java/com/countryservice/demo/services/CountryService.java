@@ -25,7 +25,15 @@ public class CountryService {
     }
 
     public Country getCountryByID(int id){
-       return countryRepository.findById(id).get();
+        List<Country> countries = countryRepository.findAll();
+        Country country = null;
+        for(Country i : countries){
+            if(i.getId() == id){
+                country = i;
+                break;
+            }
+        }
+        return country;
     }
 
     public Country getCountryByName(String countryName){
